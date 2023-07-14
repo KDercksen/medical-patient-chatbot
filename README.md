@@ -5,4 +5,4 @@ sdk: gradio
 sdk_version: 3.35.2
 ---
 
-To do: some extra explanation on this demo app.
+To do: some extra explanation on this demo app...
