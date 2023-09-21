@@ -4,9 +4,27 @@
 import gradio as gr
 import openai
 import tiktoken
+from csv import DictWriter
+from huggingface_hub import Repository
+from datetime import datetime
+import os
 from pathlib import Path
 
 enc = tiktoken.get_encoding("cl100k_base")
+
+repo_url = (
+    "https://huggingface.co/datasets/kdercksen/" "medical-patient-chatbot-conversations"
+)
+data_file = Path(repo_url) / "data" / "data.csv"
+HF_TOKEN = os.environ.get("HF_TOKEN")
+repo = Repository(local_dir="data", clone_from=repo_url, use_auth_token=HF_TOKEN)
+
+
+def store_conversation(messages):
+    with open(data_file, "a") as csvfile:
+        writer = DictWriter(csvfile, fieldnames=["messages", "timestamp"])
+        writer.writerow({"messages": messages, "timestamp": str(datetime.now())})
+        commit_url = repo.push_to_hub()
 
 
 # Collect information on the various examinations available
@@ -63,7 +81,9 @@ with gr.Blocks() as demo:
         total_cost = gr.Markdown("## Total cost of conversation: $0.00")
     chatbot = gr.Chatbot()
     msg = gr.Textbox()
-    clear = gr.ClearButton([msg, chatbot])
+    with gr.Row():
+        clear = gr.ClearButton([msg, chatbot])
+        save_conversation = gr.Button("Save conversation")
     tokens_used = gr.State(value={"prompt": 0, "completion": 0})
 
     def update_user_msg(message, chat_history):
@@ -118,4 +138,4 @@ with gr.Blocks() as demo:
 
 if __name__ == "__main__":
     demo.queue()
-    demo.launch(share=True)
+    demo.launch()
