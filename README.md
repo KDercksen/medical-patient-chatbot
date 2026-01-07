@@ -5,4 +5,10 @@ sdk: gradio
 sdk_version: 3.35.2
 ---
 
-To do: some extra explanation on this demo app...
+This is a demo application that allows chatting about patient information folders in a Gradio application frontend.
+
+To run the demo locally:
+```python
+pip install -r requirements.txt
+python medical_chatbot.py
+```
